@@ -1,0 +1,84 @@
+# Python bytecode and cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+ENV/
+*.env
+*.venv
+
+# Distribution / build directories
+*.egg
+*.egg-info/
+dist/
+build/
+wheels/
+
+# Log files
+*.log
+*.out
+*.err
+
+# Temporary files
+*.bak
+*.swp
+*.tmp
+*.~
+*.orig
+
+# Configuration files
+*.ini
+*.cfg
+
+# SQLite and other database files
+*.sqlite3
+*.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Tox environments and test-related files
+.tox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# pytest
+.pytest_cache/
+
+# Cython build artifacts
+*.c
+*.so
+*.pyd
+
+# PyCharm IDE files
+.idea/
+
+# Visual Studio Code files
+.vscode/
+
+# macOS generated files
+.DS_Store
+
+# Windows generated files
+Thumbs.db
+
+# Linux temporary files
+*~
