@@ -36,11 +36,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
+            username=validated_data['email'].split('@')[0],
             full_name=validated_data['full_name'],
             email=validated_data['email'],
             phone=validated_data['phone'],
         )
 
+        # email_user, mobile = user.email.split('@')
+        # user.username = email_user
         user.set_password(validated_data['password'])
         user.save()
 
