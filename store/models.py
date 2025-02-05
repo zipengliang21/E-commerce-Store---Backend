@@ -70,9 +70,27 @@ class Product(models.Model):
     product_rating = Review.objects.filter(product=self).aggregate(avg_rating=models.Avg("rating"))
     return product_rating["avg_rating"]
   
+  def rating_count(self):
+    return Review.objects.filter(product=self).count()
+  
   def save(self, *args, **kwargs):
     self.rating = self.product_rating()
     super(Product, self).save(*args, **kwargs)
+
+  # Returns the gallery images linked to this product
+  def gallery(self):
+    gallery = Gallery.objects.filter(product=self)
+    return gallery
+
+  def specification(self):
+    return Specification.objects.filter(product=self)
+
+  def color(self):
+    return Color.objects.filter(product=self)
+  
+  def size(self):
+    return Size.objects.filter(product=self)
+
   
 class Gallery(models.Model): 
   product = models.ForeignKey(Product, on_delete=models.CASCADE)
