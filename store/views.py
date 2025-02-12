@@ -80,7 +80,7 @@ class CartAPIView(generics.ListCreateAPIView):
       cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
       cart.save()
 
-      return Response({'message:': "Cart Updates Successsfully"}, status=status.HTTP_200_OK)
+      return Response({'message': "Cart Updates Successsfully"}, status=status.HTTP_200_OK)
     
     else:
       cart = Cart()
@@ -102,4 +102,4 @@ class CartAPIView(generics.ListCreateAPIView):
       cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
       cart.save()
 
-      return Response({'message:': "Cart Created Successsfully"}, status=status.HTTP_201_CREATED)
+      return Response({'message': "Cart Created Successsfully"}, status=status.HTTP_201_CREATED)
