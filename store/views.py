@@ -291,7 +291,7 @@ class CheckoutView(generics.RetrieveAPIView):
     order = CartOrder.objects.get(oid=order_oid)
     return order
   
-class CouponApiView(generics.CreateAPIView):
+class CouponAPIView(generics.CreateAPIView):
     serializer_class = CartOrderSerializer
     queryset = Coupon.objects.all()
     permission_classes = [AllowAny]
