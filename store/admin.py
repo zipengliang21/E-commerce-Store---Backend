@@ -24,6 +24,9 @@ class ProductAdmin(admin.ModelAdmin):
   search_fields = ["title"]
   inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]
 
+class CartOrderAdmin(admin.ModelAdmin):
+  list_display = ["oid", "payment_status", "total"]
+
 class ProductReviewAdmin(admin.ModelAdmin):
   list_editable = ['active']
   list_editable = ['active']
@@ -41,7 +44,7 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)
 
 admin.site.register(Cart)
-admin.site.register(CartOrder)
+admin.site.register(CartOrder, CartOrderAdmin)
 admin.site.register(CartOrderItem)
 
 admin.site.register(Tax)

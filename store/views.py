@@ -380,3 +380,96 @@ class StripeCheckoutView(generics.CreateAPIView):
       return redirect(checkout_session.url)
     except stripe.error.StripeError as e:
       return Response( {'error': f'Something went wrong when creating stripe checkout session: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class PaymentSuccessView(generics.CreateAPIView):
+  serializer_class = CartOrderSerializer
+  queryset = CartOrder.objects.all()
+  
+  
+  def create(self, request, *args, **kwargs):
+    payload = request.data
+    
+    order_oid = payload['order_oid']
+    session_id = payload['session_id']
+    # payapl_order_id = payload['payapl_order_id']
+
+    order = CartOrder.objects.get(oid=order_oid)
+    order_items = CartOrderItem.objects.filter(order=order)
+
+    # if payapl_order_id != "null":
+    #     paypal_api_url = f'https://api-m.sandbox.paypal.com/v2/checkout/orders/{payapl_order_id}'
+    #     headers = {
+    #         'Content-Type': 'application/json',
+    #         'Authorization': f'Bearer {get_access_token(PAYPAL_CLIENT_ID, PAYPAL_SECRET_ID)}',
+    #     }
+    #     response = requests.get(paypal_api_url, headers=headers)
+
+    #     if response.status_code == 200:
+    #       paypal_order_data = response.json()
+    #       paypal_payment_status = paypal_order_data['status']
+    #       if paypal_payment_status == 'COMPLETED':
+    #         if order.payment_status == "processing":
+    #           order.payment_status = "paid"
+    #           order.save()
+    #           if order.buyer != None:
+    #             send_notification(user=order.buyer, order=order)
+
+    #           merge_data = {
+    #             'order': order, 
+    #             'order_items': order_items, 
+    #           }
+    #           subject = f"Order Placed Successfully"
+    #           text_body = render_to_string("email/customer_order_confirmation.txt", merge_data)
+    #           html_body = render_to_string("email/customer_order_confirmation.html", merge_data)
+              
+    #           msg = EmailMultiAlternatives(
+    #             subject=subject, from_email=settings.FROM_EMAIL,
+    #             to=[order.email], body=text_body
+    #           )
+    #           msg.attach_alternative(html_body, "text/html")
+    #           msg.send()
+
+    #           for o in order_items:
+    #             send_notification(vendor=o.vendor, order=order, order_item=o)
+                
+    #             merge_data = {
+    #                 'order': order, 
+    #                 'order_items': order_items, 
+    #             }
+    #             subject = f"New Sale!"
+    #             text_body = render_to_string("email/vendor_order_sale.txt", merge_data)
+    #             html_body = render_to_string("email/vendor_order_sale.html", merge_data)
+                
+    #             msg = EmailMultiAlternatives(
+    #                 subject=subject, from_email=settings.FROM_EMAIL,
+    #                 to=[o.vendor.email], body=text_body
+    #             )
+    #             msg.attach_alternative(html_body, "text/html")
+    #             msg.send()
+
+    #           return Response( {"message": "Payment Successfull"}, status=status.HTTP_201_CREATED)
+    #         else:   
+    #           return Response( {"message": "Already Paid"}, status=status.HTTP_201_CREATED)
+          
+
+    # Process Stripe Payment
+    if session_id != "null":
+      session = stripe.checkout.Session.retrieve(session_id)
+
+      if session.payment_status == "paid":
+        if order.payment_status == "processing":
+          order.payment_status = "paid"
+          order.save()
+
+          return Response( {"message": "Payment Successfull"}, status=status.HTTP_201_CREATED)
+        else:
+          return Response( {"message": "Already Paid"}, status=status.HTTP_201_CREATED)
+          
+      elif session.payment_status == "unpaid":
+        return Response( {"message": "unpaid!"}, status=status.HTTP_402_PAYMENT_REQUIRED)
+      elif session.payment_status == "canceled":
+        return Response( {"message": "cancelled!"}, status=status.HTTP_403_FORBIDDEN)
+      else:
+        return Response( {"message": "An Error Occured!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+      session = None
