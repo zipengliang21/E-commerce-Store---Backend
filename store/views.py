@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 
 from userauths.models import User
-from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon
+from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification
 from store.serializer import ProductSerializer, CategorySerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer, CouponSerializer
 
 from rest_framework import generics, status
@@ -447,7 +447,7 @@ class PaymentSuccessView(generics.CreateAPIView):
     #             msg.attach_alternative(html_body, "text/html")
     #             msg.send()
 
-    #           return Response( {"message": "Payment Successfull"}, status=status.HTTP_201_CREATED)
+    #           return Response( {"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
     #         else:   
     #           return Response( {"message": "Already Paid"}, status=status.HTTP_201_CREATED)
           
@@ -457,11 +457,11 @@ class PaymentSuccessView(generics.CreateAPIView):
       session = stripe.checkout.Session.retrieve(session_id)
 
       if session.payment_status == "paid":
-        if order.payment_status == "processing":
+        if order.payment_status == "pending":
           order.payment_status = "paid"
           order.save()
 
-          return Response( {"message": "Payment Successfull"}, status=status.HTTP_201_CREATED)
+          return Response( {"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
         else:
           return Response( {"message": "Already Paid"}, status=status.HTTP_201_CREATED)
           
