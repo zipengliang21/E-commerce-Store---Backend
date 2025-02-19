@@ -15,6 +15,14 @@ import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+def send_notification(user=None, vendor=None, order=None, order_item=None):
+  Notification.objects.create(
+    user=user,
+    vendor=vendor,
+    order=order,
+    order_item=order_item,
+  )
+
 class CategoryListAPIView(generics.ListAPIView):
   queryset = Category.objects.all()
   serializer_class = CategorySerializer
@@ -238,6 +246,7 @@ class CreateOrderView(generics.CreateAPIView):
     total_total = Decimal(0.0)
 
     order = CartOrder.objects.create(
+      buyer=user,
       full_name=full_name,
       email=email,
       mobile=mobile,
@@ -460,6 +469,14 @@ class PaymentSuccessView(generics.CreateAPIView):
         if order.payment_status == "pending":
           order.payment_status = "paid"
           order.save()
+
+          # Send Notifications to customers
+          if order.buyer != None:
+            send_notification(user=order.buyer, order=order)
+
+          # Send Notifications to vendors
+          for o in order_items:
+            send_notification(vendor=o.vendor, order=order, order_item=o)
 
           return Response( {"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
         else:
