@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 from userauths.models import User
 from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification
@@ -477,6 +479,24 @@ class PaymentSuccessView(generics.CreateAPIView):
           # Send Notifications to vendors
           for o in order_items:
             send_notification(vendor=o.vendor, order=order, order_item=o)
+
+          context = {
+            'order': order, 
+            'order_items': order_items, 
+          } 
+          print("order:", order.full_name)
+          subject = "Order Placed Successfully"
+          text_body = render_to_string("email/customer_order_confirmation.txt", context)
+          html_body = render_to_string("email/customer_order_confirmation.html", context)
+          
+          msg = EmailMultiAlternatives(
+              subject=subject, 
+              from_email=settings.FROM_EMAIL,
+              to=[order.email], 
+              body=text_body
+          )
+          msg.attach_alternative(html_body, "text/html")
+          msg.send()
 
           return Response( {"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
         else:
