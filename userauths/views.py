@@ -11,18 +11,22 @@ from userauths.serializer import RegisterSerializer, MyTokenObtainPairSerializer
 
 import shortuuid
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
+
 def generate_otp():
     uuid_key = shortuuid.uuid()
     unique_key = uuid_key[:6]
     return unique_key
+
 
 class PasswordResetEmailVerifyView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
@@ -47,17 +51,18 @@ class PasswordResetEmailVerifyView(generics.RetrieveAPIView):
 
         return user
 
+
 class PasswordChangeView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
         payload = request.data
-        
+
         otp = payload['otp']
         uidb64 = payload['uidb64']
         password = payload['password']
-    
+
         user = User.objects.get(id=uidb64, otp=otp)
 
         if user:
@@ -65,6 +70,8 @@ class PasswordChangeView(generics.CreateAPIView):
             user.otp = ""
             user.save()
 
-            return Response({"message": "Password Changed Successfully"}, status=status.HTTP_201_CREATED)
+            return Response(
+                {"message": "Password Changed Successfully"}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"message": "An error occured"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "An error occured"},
+                            status=status.HTTP_400_BAD_REQUEST)

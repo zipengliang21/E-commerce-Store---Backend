@@ -1,6 +1,7 @@
 from django.contrib import admin
 from userauths.models import User, Profile
 
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ['full_name', 'email', 'phone']
 
@@ -11,6 +12,6 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ['full_name']
     list_filter = ['date']
 
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile, ProfileAdmin)
-

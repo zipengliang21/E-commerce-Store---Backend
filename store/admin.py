@@ -1,44 +1,62 @@
 from django.contrib import admin
 from store.models import Product, Tax, Category, Gallery, Specification, Size, Color, Cart, CartOrder, CartOrderItem, Review, Notification, Coupon
 
+
 class GalleryInline(admin.TabularInline):
-  model = Gallery
-  extra = 0
+    model = Gallery
+    extra = 0
+
 
 class SpecificationInline(admin.TabularInline):
-  model = Specification
-  extra = 0
+    model = Specification
+    extra = 0
+
 
 class SizeInline(admin.TabularInline):
-  model = Size
-  extra = 0
+    model = Size
+    extra = 0
+
 
 class ColorInline(admin.TabularInline):
-  model = Color
-  extra = 0
+    model = Color
+    extra = 0
+
 
 class ProductAdmin(admin.ModelAdmin):
-  list_display = ["title", "price", "category","shipping_amount", "stock_qty", "in_stock", "vendor", "featured"]
-  list_editable = ["featured"]
-  list_filter = ["date"]
-  search_fields = ["title"]
-  inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]
+    list_display = [
+        "title",
+        "price",
+        "category",
+        "shipping_amount",
+        "stock_qty",
+        "in_stock",
+        "vendor",
+        "featured"]
+    list_editable = ["featured"]
+    list_filter = ["date"]
+    search_fields = ["title"]
+    inlines = [GalleryInline, SpecificationInline, SizeInline, ColorInline]
+
 
 class CartOrderAdmin(admin.ModelAdmin):
-  list_display = ["oid", "payment_status", "total"]
+    list_display = ["oid", "payment_status", "total"]
+
 
 class ProductReviewAdmin(admin.ModelAdmin):
-  list_editable = ['active']
-  list_editable = ['active']
-  list_display = ['user', 'product', 'review', 'reply' ,'rating', 'active']
+    list_editable = ['active']
+    list_editable = ['active']
+    list_display = ['user', 'product', 'review', 'reply', 'rating', 'active']
+
 
 class NotificationAdmin(admin.ModelAdmin):
-  list_editable = ['seen']
-  list_display = ['order', 'seen', 'user', 'vendor', 'date']
+    list_editable = ['seen']
+    list_display = ['order', 'seen', 'user', 'vendor', 'date']
+
 
 class CouponAdmin(admin.ModelAdmin):
-  list_editable = ['code', 'active', ]
-  list_display = ['vendor' ,'code', 'discount', 'active', 'date']
+    list_editable = ['code', 'active', ]
+    list_display = ['vendor', 'code', 'discount', 'active', 'date']
+
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)

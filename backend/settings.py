@@ -37,7 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin', 
+    'jazzmin',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -161,8 +161,8 @@ MAILGUN_API_KEY = env("MAILGUN_API_KEY")
 MAILGUN_SENDER_DOMAIN = env("MAILGUN_SENDER_DOMAIN")
 
 ANYMAIL = {
-  "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
-  "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
+    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
 }
 
 FROM_EMAIL = 'zipengliang21@gmail.com'

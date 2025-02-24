@@ -4,24 +4,29 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from userauths.models import Profile, User
 
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        
+
         token['full_name'] = user.full_name
         token['email'] = user.email
         token['username'] = user.username
         try:
             token['vendor_id'] = user.vendor.id
-        except:
+        except BaseException:
             token['vendor_id'] = 0
 
         return token
 
+
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
@@ -30,7 +35,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError(
+                {"password": "Password fields didn't match."})
 
         return attrs
 
@@ -47,7 +53,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
-        return user 
+        return user
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -55,12 +62,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+
 class ProfileSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Profile
         fields = '__all__'
-    
+
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['user'] = UserSerializer(instance.user).data
