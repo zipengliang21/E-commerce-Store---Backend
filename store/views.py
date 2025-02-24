@@ -479,12 +479,27 @@ class PaymentSuccessView(generics.CreateAPIView):
           # Send Notifications to vendors
           for o in order_items:
             send_notification(vendor=o.vendor, order=order, order_item=o)
+            context = {
+            'order': order, 
+            'order_items': order_items, 
+            } 
+            subject = "New Sale!"
+            text_body = render_to_string("email/vendor_order_sale.txt", context)
+            html_body = render_to_string("email/vendor_order_sale.html", context)
+            
+            msg = EmailMultiAlternatives(
+                subject=subject, 
+                from_email=settings.FROM_EMAIL,
+                to=[o.vendor.user.email], 
+                body=text_body
+            )
+            msg.attach_alternative(html_body, "text/html")
+            msg.send()
 
           context = {
             'order': order, 
             'order_items': order_items, 
           } 
-          print("order:", order.full_name)
           subject = "Order Placed Successfully"
           text_body = render_to_string("email/customer_order_confirmation.txt", context)
           html_body = render_to_string("email/customer_order_confirmation.html", context)
