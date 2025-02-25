@@ -39,7 +39,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display = ["oid", "payment_status", "total"]
+    list_display = ["oid", "buyer", "payment_status", "total"]
 
 
 class ProductReviewAdmin(admin.ModelAdmin):
