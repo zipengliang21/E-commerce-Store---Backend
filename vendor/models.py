@@ -15,6 +15,8 @@ class Vendor(models.Model):
         help_text='Shop Name',
         null=True,
         blank=True)
+    email = models.EmailField(
+        max_length=100, help_text="Shop Email", null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     mobile = models.CharField(
         max_length=100,

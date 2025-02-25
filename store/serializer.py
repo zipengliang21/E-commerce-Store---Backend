@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from userauths.serializer import ProfileSerializer
 
 from store.models import Cart, CartOrderItem, Notification, Product, Category, CartOrder, Gallery, ProductFaq, Review, Specification, Coupon, Color, Size, Wishlist, Vendor, Gallery
 from vendor.models import Vendor
@@ -201,6 +202,9 @@ class VendorSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    # Serialize the related Product model
+    product = ProductSerializer()
+    profile = ProfileSerializer()
 
     class Meta:
         model = Review

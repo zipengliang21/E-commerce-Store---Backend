@@ -4,8 +4,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from userauths.models import User
-from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification
-from store.serializer import ProductSerializer, CategorySerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer, CouponSerializer
+from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification, Review
+from store.serializer import ProductSerializer, CategorySerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer, CouponSerializer, ReviewSerializer
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from decimal import Decimal
 
 import stripe
+import requests
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -430,65 +431,72 @@ class PaymentSuccessView(generics.CreateAPIView):
 
         order_oid = payload['order_oid']
         session_id = payload['session_id']
-        # payapl_order_id = payload['payapl_order_id']
+        payapl_order_id = payload['payapl_order_id']
 
         order = CartOrder.objects.get(oid=order_oid)
         order_items = CartOrderItem.objects.filter(order=order)
 
-        # if payapl_order_id != "null":
-        #     paypal_api_url = f'https://api-m.sandbox.paypal.com/v2/checkout/orders/{payapl_order_id}'
-        #     headers = {
-        #         'Content-Type': 'application/json',
-        #         'Authorization': f'Bearer {get_access_token(PAYPAL_CLIENT_ID, PAYPAL_SECRET_ID)}',
-        #     }
-        #     response = requests.get(paypal_api_url, headers=headers)
+        if payapl_order_id != "null":
+            paypal_api_url = f'https://api-m.sandbox.paypal.com/v2/checkout/orders/{payapl_order_id}'
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {get_access_token(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET_ID)}',
+            }
+            response = requests.get(paypal_api_url, headers=headers)
 
-        #     if response.status_code == 200:
-        #       paypal_order_data = response.json()
-        #       paypal_payment_status = paypal_order_data['status']
-        #       if paypal_payment_status == 'COMPLETED':
-        #         if order.payment_status == "processing":
-        #           order.payment_status = "paid"
-        #           order.save()
-        #           if order.buyer != None:
-        #             send_notification(user=order.buyer, order=order)
+            if response.status_code == 200:
+                paypal_order_data = response.json()
+                paypal_payment_status = paypal_order_data['status']
+                print(paypal_payment_status)
+                print(order.payment_status)
+                if paypal_payment_status == 'COMPLETED':
+                    if order.payment_status == "pending":
+                        order.payment_status = "paid"
+                        order.save()
+                        if order.buyer != None:
+                            send_notification(user=order.buyer, order=order)
 
-        #           merge_data = {
-        #             'order': order,
-        #             'order_items': order_items,
-        #           }
-        #           subject = f"Order Placed Successfully"
-        #           text_body = render_to_string("email/customer_order_confirmation.txt", merge_data)
-        #           html_body = render_to_string("email/customer_order_confirmation.html", merge_data)
+                        merge_data = {
+                            'order': order,
+                            'order_items': order_items,
+                        }
+                        subject = f"Order Placed Successfully"
+                        text_body = render_to_string(
+                            "email/customer_order_confirmation.txt", merge_data)
+                        html_body = render_to_string(
+                            "email/customer_order_confirmation.html", merge_data)
 
-        #           msg = EmailMultiAlternatives(
-        #             subject=subject, from_email=settings.FROM_EMAIL,
-        #             to=[order.email], body=text_body
-        #           )
-        #           msg.attach_alternative(html_body, "text/html")
-        #           msg.send()
+                        msg = EmailMultiAlternatives(
+                            subject=subject, from_email=settings.FROM_EMAIL,
+                            to=[order.email], body=text_body
+                        )
+                        msg.attach_alternative(html_body, "text/html")
+                        msg.send()
 
-        #           for o in order_items:
-        #             send_notification(vendor=o.vendor, order=order, order_item=o)
+                        for o in order_items:
+                            send_notification(
+                                vendor=o.vendor, order=order, order_item=o)
 
-        #             merge_data = {
-        #                 'order': order,
-        #                 'order_items': order_items,
-        #             }
-        #             subject = f"New Sale!"
-        #             text_body = render_to_string("email/vendor_order_sale.txt", merge_data)
-        #             html_body = render_to_string("email/vendor_order_sale.html", merge_data)
+                            merge_data = {
+                                'order': order,
+                                'order_items': order_items,
+                            }
+                            subject = f"New Sale!"
+                            text_body = render_to_string(
+                                "email/vendor_order_sale.txt", merge_data)
+                            html_body = render_to_string(
+                                "email/vendor_order_sale.html", merge_data)
 
-        #             msg = EmailMultiAlternatives(
-        #                 subject=subject, from_email=settings.FROM_EMAIL,
-        #                 to=[o.vendor.email], body=text_body
-        #             )
-        #             msg.attach_alternative(html_body, "text/html")
-        #             msg.send()
+                            msg = EmailMultiAlternatives(
+                                subject=subject, from_email=settings.FROM_EMAIL,
+                                to=[o.vendor.email], body=text_body
+                            )
+                            msg.attach_alternative(html_body, "text/html")
+                            msg.send()
 
-        #           return Response( {"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
-        #         else:
-        #           return Response( {"message": "Already Paid"}, status=status.HTTP_201_CREATED)
+                        return Response({"message": "Payment Successful"}, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response({"message": "Already Paid"}, status=status.HTTP_201_CREATED)
 
         # Process Stripe Payment
         if session_id != "null":
@@ -557,3 +565,39 @@ class PaymentSuccessView(generics.CreateAPIView):
                 return Response({"message": "An Error Occured!"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             session = None
+
+
+class ReviewRatingAPIView(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        payload = request.data
+
+        user_id = payload['user_id']
+        product_id = payload['product_id']
+        rating = payload['rating']
+        review = payload['review']
+
+        user = User.objects.get(id=user_id)
+        product = Product.objects.get(id=product_id)
+
+        Review.objects.create(user=user, product=product,
+                              rating=rating, review=review)
+
+        return Response({"message": "Review Created Successfully."}, status=status.HTTP_201_CREATED)
+
+
+class ReviewListAPIView(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        product_id = self.kwargs['product_id']
+        print("product_id =========", product_id)
+
+        product = Product.objects.get(id=product_id)
+        reviews = Review.objects.filter(product=product)
+        return reviews
