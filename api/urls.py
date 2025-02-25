@@ -48,4 +48,8 @@ urlpatterns = [
          customer_views.OrdersAPIView.as_view()),
     path('customer/order/<int:user_id>/<order_oid>/',
          customer_views.OrdersDetailAPIView.as_view()),
+    path('customer/wishlist/create/',
+         customer_views.WishlistCreateAPIView.as_view()),
+    path('customer/wishlist/user_id>/',
+         customer_views.WishlistAPIView.as_view()),
 ]
