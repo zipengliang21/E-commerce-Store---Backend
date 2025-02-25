@@ -601,3 +601,16 @@ class ReviewListAPIView(generics.ListAPIView):
         product = Product.objects.get(id=product_id)
         reviews = Review.objects.filter(product=product)
         return reviews
+
+
+class SearchProductsAPIView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        print("query =======", query)
+
+        products = Product.objects.filter(
+            status="published", title__icontains=query)
+        return products
