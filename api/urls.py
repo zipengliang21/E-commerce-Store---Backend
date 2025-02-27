@@ -52,4 +52,10 @@ urlpatterns = [
          customer_views.WishlistCreateAPIView.as_view()),
     path('customer/wishlist/<user_id>/',
          customer_views.WishlistAPIView.as_view()),
+    path('customer/notification/<user_id>/',
+         customer_views.CustomerNotificationView.as_view()),
+    path('customer/notification/<user_id>/<noti_id>/',
+         customer_views.MarkNotificationAsSeen.as_view()),
+    path('customer/setting/<user_id>/',
+         customer_views.CustomerUpdateView.as_view()),
 ]

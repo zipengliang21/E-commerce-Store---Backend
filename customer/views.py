@@ -3,9 +3,11 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
-from userauths.models import User
+from userauths.models import Profile, User
+from userauths.serializer import ProfileSerializer
+
 from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification, Review, Wishlist
-from store.serializer import ProductSerializer, CategorySerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer, CouponSerializer, ReviewSerializer, WishlistSerializer
+from store.serializer import ProductSerializer, CategorySerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer, CouponSerializer, ReviewSerializer, WishlistSerializer, NotificationSerializer
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -78,3 +80,44 @@ class WishlistAPIView(generics.ListAPIView):
         user = User.objects.get(id=user_id)
         wishlist = Wishlist.objects.filter(user=user)
         return wishlist
+
+
+class CustomerNotificationView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        user = User.objects.get(id=user_id)
+        return Notification.objects.filter(user=user, seen=False)
+
+
+class MarkNotificationAsSeen(generics.RetrieveAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        noti_id = self.kwargs['noti_id']
+
+        user = User.objects.get(id=user_id)
+        noti = Notification.objects.get(id=noti_id, user=user)
+
+        if noti.seen != True:
+            noti.seen = True
+            noti.save()
+
+        return noti
+
+
+class CustomerUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user=user)
+        return profile
