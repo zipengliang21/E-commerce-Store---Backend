@@ -274,3 +274,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         else:
             # For other methods, set serialization depth to 3.
             self.Meta.depth = 3
+
+
+class SummarySerializer(serializers.Serializer):
+    products = serializers.IntegerField()
+    orders = serializers.IntegerField()
+    revenue = serializers.DecimalField(max_digits=12, decimal_places=2)
