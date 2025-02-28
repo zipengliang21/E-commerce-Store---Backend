@@ -66,3 +66,51 @@ def MonthlyProductsChartAPIView(request, vendor_id):
     products_by_month = products.annotate(month=ExtractMonth("date")).values(
         "month").annotate(orders=models.Count("id")).order_by("month")
     return Response(products_by_month)
+
+
+class ProductsAPIView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs['vendor_id']
+        vendor = Vendor.objects.get(id=vendor_id)
+        products = Product.objects.filter(vendor=vendor).order_by('-id')
+        return products
+
+
+class OrdersAPIView(generics.ListAPIView):
+    serializer_class = CartOrderSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs['vendor_id']
+        vendor = Vendor.objects.get(id=vendor_id)
+        orders = CartOrder.objects.filter(vendor=vendor, payment_status="paid")
+        return orders
+
+
+class OrderDetailAPIView(generics.RetrieveAPIView):
+    serializer_class = CartOrderSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        vendor_id = self.kwargs['vendor_id']
+        order_oid = self.kwargs['order_oid']
+
+        vendor = Vendor.objects.get(id=vendor_id)
+        order = CartOrder.objects.get(
+            vendor=vendor, payment_status="paid", oid=order_oid)
+        return order
+
+
+class RevenueAPIView(generics.ListAPIView):
+    serializer_class = CartOrderItemSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs['vendor_id']
+        vendor = Vendor.objects.get(id=vendor_id)
+        revenue = CartOrderItem.objects.filter(vendor=vendor, order__payment_status="paid").aggregate(
+            total_revenue=models.Sum(models.F('sub_total') + models.F('shipping_amount')))['total_revenue'] or 0
+        return revenue

@@ -67,4 +67,10 @@ urlpatterns = [
          vendor_views.MonthlyOrderChartAPIView),
     path('vendor-product-chart/<vendor_id>/',
          vendor_views.MonthlyProductsChartAPIView),
+    path('vendor/products/<vendor_id>/', vendor_views.ProductsAPIView.as_view()),
+    path('vendor/orders/<vendor_id>/', vendor_views.OrdersAPIView.as_view()),
+    path('vendor/order/<vendor_id>/<order_oid>/',
+         vendor_views.OrderDetailAPIView.as_view()),
+    path('vendor/revenue/<vendor_id>/<order_oid>/',
+         vendor_views.RevenueAPIView.as_view()),
 ]
