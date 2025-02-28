@@ -118,6 +118,9 @@ class Product(models.Model):
     def color(self):
         return Color.objects.filter(product=self)
 
+    def order_count(self):
+        return CartOrderItem.objects.filter(product=self).count()
+
     def size(self):
         return Size.objects.filter(product=self)
 

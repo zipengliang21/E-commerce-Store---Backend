@@ -86,6 +86,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "color",
             "product_rating",
             "rating_count",
+            "order_count",
         ]
 
     def __init__(self, *args, **kwargs):
