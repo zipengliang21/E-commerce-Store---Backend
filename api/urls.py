@@ -78,7 +78,7 @@ urlpatterns = [
     path('vendor-earning/<vendor_id>/',
          vendor_views.EarningAPIView.as_view()),
     path('vendor-monthly-earning/<vendor_id>/',
-         vendor_views.MonthlyEarningTracker.as_view()),
+         vendor_views.MonthlyEarningTracker),
     path('vendor-reviews/<vendor_id>/',
          vendor_views.ReviewsListAPIView.as_view()),
     path('vendor-reviews/<vendor_id>/<review_id>/',
