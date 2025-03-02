@@ -87,7 +87,7 @@ urlpatterns = [
          vendor_views.ReviewsDetailAPIView.as_view()),
     path('vendor-coupon-list/<vendor_id>/',
          vendor_views.CouponListAPIView.as_view()),
-    path('vendor-coupon-list/create/<vendor_id>/',
+    path('vendor-coupon-create/<vendor_id>/',
          vendor_views.CouponCreateAPIView.as_view()),
     path('vendor-coupon-detail/<vendor_id>/<coupon_id>/',
          vendor_views.CouponDetailAPIView.as_view()),

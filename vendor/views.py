@@ -249,7 +249,7 @@ class ReviewsListAPIView(generics.ListAPIView):
         return reviews
 
 
-class ReviewsDetailAPIView(generics.RetrieveUpdateAPIView):
+class ReviewsDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [AllowAny]
 
