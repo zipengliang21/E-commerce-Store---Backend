@@ -126,8 +126,9 @@ class Product(models.Model):
 
 
 class Gallery(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.FileField(upload_to="products", default="product.jpg")
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    image = models.FileField(upload_to="products",
+                             default="product.jpg", null=True, blank=True)
     active = models.BooleanField(default=True)
     gid = ShortUUIDField(
         unique=True,
@@ -142,27 +143,28 @@ class Gallery(models.Model):
 
 
 class Specification(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    title = models.CharField(max_length=1000)
-    content = models.CharField(max_length=1000)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=1000, null=True, blank=True)
+    content = models.CharField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return self.title
 
 
 class Size(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    name = models.CharField(max_length=1000)
-    price = models.DecimalField(decimal_places=2, max_digits=12, default=0.00)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=1000, null=True, blank=True)
+    price = models.DecimalField(
+        decimal_places=2, max_digits=12, default=0.00, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
 class Color(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    name = models.CharField(max_length=1000)
-    color_code = models.CharField(max_length=1000)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=1000, null=True, blank=True)
+    color_code = models.CharField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return self.name
