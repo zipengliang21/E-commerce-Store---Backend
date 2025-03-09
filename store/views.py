@@ -46,8 +46,8 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        slug = self.kwargs["slug"]
-        return Product.objects.get(slug=slug)
+        pid = self.kwargs["pid"]
+        return Product.objects.get(pid=pid)
 
 
 class CartAPIView(generics.ListCreateAPIView):
