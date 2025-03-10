@@ -614,12 +614,12 @@ class ProductUpdateAPIView(generics.RetrieveUpdateAPIView):
 class ProductDeleteAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = [AllowAny]
 
     def get_object(self):
         vendor_id = self.kwargs['vendor_id']
-        product_pid = self.kwargs['product_pid']
+        product_id = self.kwargs['product_id']
 
         vendor = Vendor.objects.get(id=vendor_id)
-        product = Product.objects.get(vendor=vendor, pid=product_pid)
+        product = Product.objects.get(vendor=vendor, pid=product_id)
         return product

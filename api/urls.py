@@ -112,4 +112,6 @@ urlpatterns = [
          vendor_views.ProductCreateView.as_view()),
     path('vendor-product-edit/<vendor_id>/<product_id>/',
          vendor_views.ProductUpdateAPIView.as_view()),
+    path('vendor-product-delete/<vendor_id>/<product_id>/',
+         vendor_views.ProductDeleteAPIView.as_view()),
 ]
