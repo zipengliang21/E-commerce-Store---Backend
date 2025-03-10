@@ -31,7 +31,10 @@ SECRET_KEY = 'django-insecure-aq@035=v*@18zm18!btnvfwji5@=n&su%k%lovz)rdhgp3^uj6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["zipeng-ecommerce-api.up.railway.app"]
+
+CSRF_TRUSTED_ORIGINS = ['https://zipeng-ecommerce-api.up.railway.app']
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 
 # Application definition
