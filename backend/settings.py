@@ -14,7 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from environs import Env
 import os
-
+import dj_database_url
 env = Env()
 env.read_env()
 
@@ -31,9 +31,10 @@ SECRET_KEY = 'django-insecure-aq@035=v*@18zm18!btnvfwji5@=n&su%k%lovz)rdhgp3^uj6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["zipeng-ecommerce-api.up.railway.app"]
+ALLOWED_HOSTS = ["zipeng-ecommerce-api.up.railway.app", "https://127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = ['https://zipeng-ecommerce-api.up.railway.app']
+CSRF_TRUSTED_ORIGINS = [
+    'https://zipeng-ecommerce-api.up.railway.app', 'https://127.0.0.1']
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 
@@ -107,6 +108,8 @@ DATABASES = {
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
