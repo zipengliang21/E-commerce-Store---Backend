@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.db.models import Q
 
 from userauths.models import User
 from store.models import Product, Category, Cart, Tax, CartOrder, CartOrderItem, Coupon, Notification, Review
@@ -608,9 +609,11 @@ class SearchProductsAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        query = self.request.GET.get('query')
-        print("query =======", query)
+        query = self.request.GET.get('query', '')
+        print("query ======", query)
 
         products = Product.objects.filter(
-            status="published", title__icontains=query)
+            Q(status="published") &
+            (Q(title__icontains=query) | Q(category=query))
+        )
         return products
