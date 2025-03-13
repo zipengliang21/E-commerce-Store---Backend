@@ -614,6 +614,6 @@ class SearchProductsAPIView(generics.ListAPIView):
 
         products = Product.objects.filter(
             Q(status="published") &
-            (Q(title__icontains=query) | Q(category=query))
+            (Q(title__icontains=query) | Q(category__title__iexact=query))
         )
         return products
