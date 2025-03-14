@@ -9,7 +9,7 @@ class Vendor(models.Model):
         upload_to='vendor',
         null=True,
         blank=True,
-        default='vendor.jpg')
+        default='default/vendor.jpg')
     name = models.CharField(
         max_length=100,
         help_text='Shop Name',
